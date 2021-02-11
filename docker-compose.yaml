@@ -1,0 +1,22 @@
+version: '3'
+
+services:
+  db:
+    image: postgres:9.4
+    restart: always
+    environment: 
+      - POSTGRES_PASSWORD=bankapi
+      - POSTGRES_DB=bank-api
+    ports:
+    - 5432:5432
+
+  app:
+    build: .
+    volumes:
+      - .:/go/src/app
+    depends_on:
+      - db
+    links: 
+      - db:db
+    ports:
+      - "8080:8080"
