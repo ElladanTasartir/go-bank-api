@@ -3,6 +3,7 @@ package routes
 import (
 	"encoding/json"
 	"io/ioutil"
+	"log"
 	"net/http"
 
 	"github.com/ElladanTasartir/go-bank-api/models"
@@ -63,6 +64,7 @@ func NewBank(connection *gorm.DB) *BankRouter {
 	}
 
 	bank.registerRoutes()
+	log.Println("Bank routes initialized")
 
 	return &bank
 }
