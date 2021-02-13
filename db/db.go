@@ -17,6 +17,8 @@ func InitDatabase(host string, user string, password string, database string, po
 		log.Fatal("Failed to connect to database")
 	}
 
+	db.Exec(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`)
+
 	db.AutoMigrate(&models.Bank{})
 	return db
 }
