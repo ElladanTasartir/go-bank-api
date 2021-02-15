@@ -2,6 +2,7 @@ package routes
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -20,6 +21,8 @@ type BankRouter struct {
 func (b *BankRouter) registerRoutes() {
 	b.router.HandleFunc("/banks", b.getBanks).Methods("GET")
 	b.router.HandleFunc("/banks", b.createBank).Methods("POST")
+	b.router.HandleFunc("/banks/{id}", b.getBank).Methods("GET")
+	b.router.HandleFunc("/banks/{id}", b.deleteBank).Methods("DELETE")
 }
 
 func (b *BankRouter) getBanks(w http.ResponseWriter, r *http.Request) {
@@ -31,6 +34,19 @@ func (b *BankRouter) getBanks(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(banks)
+}
+
+func (b *BankRouter) getBank(w http.ResponseWriter, r *http.Request) {
+	param := mux.Vars(r)["id"]
+
+	bank := &models.Bank{}
+	err := b.bankservice.GetBank(bank, param)
+	if err != nil {
+		http.Error(w, "Bank with ID %v not found", http.StatusNotFound)
+		return
+	}
+
+	json.NewEncoder(w).Encode(bank)
 }
 
 func (b *BankRouter) createBank(w http.ResponseWriter, r *http.Request) {
@@ -55,6 +71,19 @@ func (b *BankRouter) createBank(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(201)
 	json.NewEncoder(w).Encode(*bank)
+}
+
+func (b *BankRouter) deleteBank(w http.ResponseWriter, r *http.Request) {
+	param := mux.Vars(r)["id"]
+
+	bank := &models.Bank{}
+	err := b.bankservice.DeleteBanks(bank, param)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Bank with ID %v not found", param), http.StatusNotFound)
+	}
+
+	w.WriteHeader(204)
+	json.NewEncoder(w).Encode(nil)
 }
 
 func NewBank(connection *gorm.DB) *BankRouter {
