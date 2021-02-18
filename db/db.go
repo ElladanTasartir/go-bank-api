@@ -9,7 +9,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func InitDatabase(host string, user string, password string, database string, port int) *gorm.DB {
+func InitDatabase(host, user, password, database string, port int) *gorm.DB {
 	dsn := fmt.Sprintf("host=%v user=%v password=%v dbname=%v port=%v", host, user, password, database, port)
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
